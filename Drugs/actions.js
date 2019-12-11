@@ -8,7 +8,6 @@ NumberOfMedicationsQuery = (name) => {
         });
     });
 };
-
 NumberOfMedications = async (req , res)=>{
         try {
             const result = await NumberOfMedicationsQuery(req.params.name);
