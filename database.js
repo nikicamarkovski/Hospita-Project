@@ -12,8 +12,7 @@
           console.log('Problem with conection'+ error.message)
       } else {
         console.log('DB connect')
-      }
-      
+      } 
   });
 
   module.exports = connection;
