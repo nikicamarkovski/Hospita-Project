@@ -10,6 +10,7 @@ GetOrderQuery = (order) => {
               else resolve(results)
          })
     })
+
 }
 
 UpdateDrugsQuery=(quantity, name) => {
