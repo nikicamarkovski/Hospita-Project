@@ -8,7 +8,6 @@ function EmailValidator (email) {
     return email.includes("@" && ".com") && email.length > 10;
 } 
 
-
 function AgeValidator (age) {
     return age > 0  
 }
