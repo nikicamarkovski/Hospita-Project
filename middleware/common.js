@@ -15,7 +15,6 @@ checkToken = (req, res, next) => {
         res.sendStatus(403)
     }
 }
-
 verifyToken = (req, res,next) => {
     jwt.verify(req.token, 'login', (err, data) => {
         if(err){
