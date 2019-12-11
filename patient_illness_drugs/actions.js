@@ -6,7 +6,6 @@ const {CheckQuantityOfDrug} = require('../helper');
 const {GetAllTermsQuery, GetOwnTerms} = require('../termini/actions');
 const {Terms} = require('../Objects');
 
-
 GetHistoryOfPatientQuery = (id) => {
     const query = 'select * from patient join patient_illness_drugs on patient.id  = patient_illness_drugs.patient_id\
      join illness on patient_illness_drugs.illness_id = illness.id \
