@@ -15,7 +15,6 @@ GetAllPatientsQuery = () => {
         });
     });
 };
-
 GetAllPatients = async (req, res) => {
     try {
      
