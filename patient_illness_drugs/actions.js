@@ -19,7 +19,6 @@ GetHistoryOfPatientQuery = (id) => {
 
         });
      });
-
 };
 
 GetHistoryOfPatient =async (req , res) =>  {
