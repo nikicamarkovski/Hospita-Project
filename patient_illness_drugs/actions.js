@@ -18,7 +18,8 @@ GetHistoryOfPatientQuery = (id) => {
             else resolve(results);
 
         });
-     });
+    
+    });
 };
 
 GetHistoryOfPatient =async (req , res) =>  {
