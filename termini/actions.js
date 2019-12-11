@@ -10,8 +10,7 @@ GetAllTermsQuery = (id) => {
             if (error) reject(error);
             else resolve(results);
         });
-
-    });
+   });
 };
 
 GetAllTerms = async (req , res) => {
