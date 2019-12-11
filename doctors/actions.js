@@ -11,7 +11,6 @@ GetAllDoctorsQuery = () => {
     });
 };
 
-
 GetAllDoctors =async (req , res) => {
     try {
         const doctor = await GetAllDoctorsQuery();
