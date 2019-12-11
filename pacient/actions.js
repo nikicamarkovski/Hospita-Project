@@ -1,5 +1,5 @@
 const db = require('../database');
-const { AgeValidator, EmailValidator, PasswordValidator ,loginLogic , SamePassword , options} = require('../helper');
+const { AgeValidator, EmailValidator, PasswordValidator ,loginLogic , SamePassword} = require('../helper');
 const doctors = require('../doctors/actions');
 var jwt = require('jsonwebtoken');
 var rn = require('random-number');
