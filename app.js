@@ -10,7 +10,6 @@ var unless = require('express-unless')
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(bodyParser.json());
-
 app.use(appRouter);
 app.use(jwt({ secret: 'login'}).unless({path: ['/login']}));
 app.use(middleware.WrongRoute);
