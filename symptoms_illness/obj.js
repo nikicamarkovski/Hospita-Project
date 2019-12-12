@@ -9,8 +9,15 @@ function Illness (bolest_id , ime) {
     this.ime = ime;
 }
 
+function Patient (name , surname , age , email) {
+    this.name = name ; 
+    this.surname = surname;
+    this.age = age ;
+    this.email = email
+}
 
 module.exports = {
     Symptom ,
-    Illness
+    Illness ,
+    Patient
 }

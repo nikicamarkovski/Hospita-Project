@@ -1,6 +1,8 @@
 const db = require('../database');
 const bcrypt = require('bcryptjs');
 const {PasswordValidator}= require('../helper');
+var jwt = require('jsonwebtoken');
+const {Patient} = require('../Objects');
 GetAllDoctorsQuery = () => {
     const query = 'select * from doctor';
     return new Promise((resolve , reject)=>{
@@ -54,9 +56,74 @@ Update = async (req, res)=>{
         res.send(error).status(500);
     }
 }
+GetOwnPatientsQuery = (id) => {
+    const query = 'select * from patient where doctor_id = ?';
+    return new Promise((resolve, reject) => {
+        db.query(query, [id], (error, results, fields) => {
+            if (error) reject(error);
+            else resolve(results);
+        });
+    });
+}
+GetOwnPatients =async (req , res) => {
+    try {
+        let tokenData = jwt.verify(req.token, 'login', (error, authorizedData) => {
+            return authorizedData
+        })
+        console.log(tokenData)
+        let patients = await GetOwnPatientsQuery(tokenData.user.doctor_id);
+        res.send(patients).status(200);
+
+    } catch (error) {
+        res.send(error).status(500);
+    }
+}
+CreateDoctorQuery = (doctor , pass)=>{
+    const query = 'INSERT INTO doctor (name ,surname, email , password , admin) values (? , ? , ? , ? , ?)';
+    return new Promise((resolve, reject) => {
+        db.query(query, [doctor.name,doctor.surname,doctor.email , pass , doctor.admin], (error, results, fields) => {
+            if (error) reject(error);
+            else resolve(results);
+        });
+    });
+}
+CreateDoctor =async (req , res) => {
+    let body =req.body;
+    console.log(body);
+    try {
+        const passHash = bcrypt.hashSync(body.password, 10);
+        await CreateDoctorQuery(body , passHash);
+        res.send("doctor has been created");
+    } catch (error) {
+        res.send(error);
+    }
+}
+
+DeteleDoctorQuery = (id)=>{ 
+    const query = 'delete from doctor where doctor_id = ?'
+    return new Promise((resolve, reject) => {
+        db.query(query, [id], (error, results, fields) => {
+            if (error) reject(error);
+            else resolve(results);
+        });
+    });
+}
+DeteleDoctor = async (req , res)=> {
+    try {
+        await DeteleDoctorQuery(req.params.id);
+        res.send("doctor has been deleted");
+
+    } catch (error) {
+        res.send(error);
+    }   
+}
+
 
 module.exports = {
     GetAllDoctors ,
     GetAllDoctorsByEmailQuery ,
-    Update
+    Update,
+    GetOwnPatients ,
+    CreateDoctor ,
+    DeteleDoctor
 }

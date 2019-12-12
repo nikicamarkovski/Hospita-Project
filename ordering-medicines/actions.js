@@ -10,7 +10,6 @@ GetOrderQuery = (order) => {
               else resolve(results)
          })
     })
-
 }
 
 UpdateDrugsQuery=(quantity, name) => {
@@ -48,7 +47,7 @@ GetOrder = async (req , res) =>{
 }
 
 CancelOrderQuery=(id) => {
-    console.log(id);
+    
     const query =  'select * from orders where order_id = ?';
 return new Promise ((resolve , reject) =>{
     db.query(query ,[id],(error , results , fields)=>{

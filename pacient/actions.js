@@ -46,7 +46,7 @@ GetSpecificPatient = async (req, res) => {
             res.send("nema pacient so takvo id").status(403);
 
         } else {
-            res.send(specificPatient).send(200);
+            res.send(specificPatient).status(200);
         }
 
     } catch (error) {
@@ -63,10 +63,10 @@ GetPatientByEmail = (email) => {
         })
     })
 }
-NewPatientQuery = (patient, pass) => {
+NewPatientQuery = (patient, pass , doctor_id) => {
     const query = 'INSERT INTO patient(name , surname , age , email , password , doctor_id) VALUES(?, ?, ? , ? , ?,?) ';
     return new Promise((resolve, reject) => {
-        db.query(query, [patient.name, patient.surname, patient.age, patient.email, pass,patient.doctor_id], (error, results, fields) => {
+        db.query(query, [patient.name, patient.surname, patient.age, patient.email, pass, doctor_id], (error, results, fields) => {
             if (error) reject(error)
             else resolve(results);
         })
@@ -76,22 +76,24 @@ NewPatientQuery = (patient, pass) => {
 NewPatient = async (req, res) => {
     let body = req.body;
 
-    console.log(body.password);
     try {
         const isExist = await GetPatientByEmail(body.email)
-        
+        console.log(isExist);
         if (isExist.length === 0) {
 
             if (EmailValidator(body.email) && AgeValidator(body.age) && PasswordValidator(body.password)) {
-                
+                let tokenData = jwt.verify(req.token, 'login', (error, authorizedData) => {
+                    return authorizedData
+                });
+                let doctor_id = tokenData.user.doctor_id;
                 const passHash = bcrypt.hashSync(body.password, 10);
-                await NewPatientQuery(body, passHash);
+                await NewPatientQuery(body, passHash , doctor_id);
                 res.send("Patient was created").status(200);
             } else {
                 res.send("Check your age , Email and password").status(401);
             }
         } else {
-            res.send(error).status(403);
+            res.send("wrong email").status(403);
         }
 
     } catch (error) {
@@ -111,8 +113,17 @@ DetelePatientQuery = (id) => {
 };
 DetelePatient = async (req, res) => {
     try {
+        const patient = await GetSpecificPatientQuery(req.params.id);
+        
+        let tokenData = jwt.verify(req.token, 'login', (error, authorizedData) => {
+         return authorizedData
+     });
+     if (tokenData.user.doctor_id == patient[0].doctor_id) {
         await DetelePatientQuery(req.params.id);
-        res.send("the patient has been deleted").status(200);
+        res.send("patient has been deleted").status(200);
+     } else {
+         res.send("not your patient");
+     }
     } catch (error) {
         res.send(error).status(500);
     };
@@ -131,15 +142,13 @@ UpdatePatientQuery = (pass, email) => {
 UpdatePatient = async (req, res) => {
  
     const body = req.body;
-
+    console.log(body);
     try {
         const patient = await GetPatientByEmail(body.email);
-        console.log(patient[0]);
-        console.log(patient.length);
         const matchPass = bcrypt.compareSync(body.password, patient[0].password);
      
 
-      if (matchPass || patient.length > 0 ){
+      if (matchPass && patient.length > 0 ){
         const passValidator = PasswordValidator(body.newpassword);
         const samePass = SamePassword(body.password , body.newpassword);
         if (passValidator && samePass) {
@@ -198,6 +207,7 @@ module.exports = {
     NewPatient,
     DetelePatient,
     UpdatePatient,
+    GetSpecificPatientQuery,
     Login
 }
 

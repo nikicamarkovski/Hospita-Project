@@ -37,25 +37,33 @@ loginLogic = (user,patient, doctor, pass)=>{
     return error.message
   }
   user = user[0];
-
+    console.log(user);
   const matchPass = bcrypt.compareSync(pass, user.password);
-  console.log(pass);
-  console.log(user.password);
-  console.log(matchPass);
 
   if (matchPass) {
       
       var privateKey = 'login'
       
       var token = jwt.sign({user}, privateKey,{ expiresIn: '24h' });
-      let userToSend = {
-          Name:user.name,
-          Email:user.email,
-          Token:token
-      }
- 
-      return userToSend
-  } else {
+      var key =  Object.keys(user);
+      let isAdmin =  key.includes("admin");
+     if (isAdmin) {
+        let doctorToSend = {
+            Name:user.name,
+            Email:user.email,
+            Admin : user.admin,
+            Token:token
+        }
+        return doctorToSend
+     } else {
+        let userToSend = {
+            Name:user.name,
+            Email:user.email,
+            Token:token
+        }
+        return userToSend
+     }
+     } else {
       
     return "Wrong Email Or Password";
   

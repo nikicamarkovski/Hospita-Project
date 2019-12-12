@@ -5,6 +5,7 @@ const drugs = require('../Drugs/actions');
 const {CheckQuantityOfDrug} = require('../helper');
 const {GetAllTermsQuery, GetOwnTerms} = require('../termini/actions');
 const {Terms} = require('../Objects');
+const {GetSpecificPatientQuery} = require('../pacient/actions');
 
 GetHistoryOfPatientQuery = (id) => {
     const query = 'select * from patient join patient_illness_drugs on patient.id  = patient_illness_drugs.patient_id\
@@ -64,6 +65,14 @@ CreateHistory = async (req, res) => {
        try {
            let body = req.body;
            const result = await drugs.GetDrugQuantity(body.drug);
+          
+           const patient = await GetSpecificPatientQuery(body.patient);
+        
+           let tokenData = jwt.verify(req.token, 'login', (error, authorizedData) => {
+            return authorizedData
+        });
+ 
+            if (tokenData.user.doctor_id == patient[0].doctor_id) {
            if (CheckQuantityOfDrug(result[0].quantity , body.quantity)) {
             await CreateHistoryQuery(body);
             await drugs.PatientsDrugQuery(body.quantity , body.drug)
@@ -71,6 +80,9 @@ CreateHistory = async (req, res) => {
            } else {
                res.send("there is not enough medicine there are " + result[0].quantity + " from " + body.drug).status(401);
            }
+            } else {
+                res.send("Not your patient");
+            }
 
        } catch (error) {
            res.send(error).status(500);
@@ -94,7 +106,7 @@ GetOwnHistory = async (req, res) => {
     
 
     try {
-        let tokenData = jwt.verify(req.token, 'login', (err, authorizedData) => {
+        let tokenData = jwt.verify(req.token, 'login', (error, authorizedData) => {
             return authorizedData
         })
         const result = await GetOwnHistoryQuery(tokenData.user.email);

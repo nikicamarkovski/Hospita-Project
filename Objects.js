@@ -14,3 +14,5 @@ module.exports = {
     Patient ,
     Terms
 }
+
+

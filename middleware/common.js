@@ -46,6 +46,15 @@ checIsPatient = (req , res , next )=> {
     });
 }
 
+
+Admin = (req , res , next )=> {
+    jwt.verify(req.token , 'login', (err , data)=>{
+        console.log(data.user);
+        if(data.user.admin != true)  
+          res.status(403).send('Invalid authorisation');
+        else next();
+    });
+}
 WrongRoute = (req, res, next) => {
     var error = new Error('Not found , please try with another route!');
     error.status = 404;
@@ -67,6 +76,7 @@ module.exports = {
     verifyToken,
     checkIsDoctor, 
     checIsPatient,
+    Admin,
     errorHandler,
     WrongRoute
 }
